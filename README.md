@@ -1,15 +1,15 @@
-github-meta
+aws-ip-ranges
 ==============================================================================
 
-<https://api.github.com/meta> as const structs
+<https://ip-ranges.amazonaws.com/ip-ranges.json> as const structs
 
 
 Description
 ------------------------------------------------------------------------------
 
-If the data from <https://api.github.com/meta> is used in a Rust program, it
-can be slow to fetch it every time. This crate provides the data as const
-structs, so it can be compiled into the program.
+If the data from <https://ip-ranges.amazonaws.com/ip-ranges.json> is used in a
+Rust program, it can be slow to fetch it every time. This crate provides the
+data as const structs, so it can be compiled into the program.
 
 An hourly GitHub Actions workflow updates the data in this crate automatically
 and releases a new version of the crate if the data has changed.
@@ -20,10 +20,8 @@ Usage
 
 ```rust
 fn main() {
-    let meta = github_meta::META;
-    println!("{meta:#?}");
-    let secret_scanning = github_meta::SECRET_SCANNING;
-    println!("{secret_scanning:#?}");
+  let ip_ranges = aws_ip_ranges::IP_RANGES;
+  println!("{ip_ranges:#?}");
 }
 ```
 

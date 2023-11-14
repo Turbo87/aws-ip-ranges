@@ -12,19 +12,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "aws-ip-ranges"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "bump_version"
 version = "0.0.0"
 dependencies = [
  "regex",
  "semver",
-]
-
-[[package]]
-name = "github-meta"
-version = "0.5.0"
-dependencies = [
- "serde",
- "serde_json",
 ]
 
 [[package]]

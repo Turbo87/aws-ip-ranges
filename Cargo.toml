@@ -1,10 +1,10 @@
 [package]
-name = "github-meta"
-version = "0.5.0"
-description = "https://api.github.com/meta as const structs"
+name = "aws-ip-ranges"
+version = "0.0.0"
+description = "https://ip-ranges.amazonaws.com/ip-ranges.json as const structs"
 license = "MIT/Apache-2.0"
-repository = "https://github.com/Turbo87/github-meta"
-keywords = ["github"]
+repository = "https://github.com/Turbo87/aws-ip-ranges"
+keywords = ["aws"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

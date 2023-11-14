@@ -11,8 +11,7 @@ mod types {
 
 fn main() -> Result<(), Box<dyn Error>> {
     generate_types_module()?;
-    generate_meta_rs()?;
-    generate_secret_scanning_rs()?;
+    generate_data_rs()?;
     Ok(())
 }
 
@@ -28,7 +27,8 @@ fn generate_types_module() -> Result<(), Box<dyn Error>> {
         .replace("#[derive(", "#[derive(Debug, ")
         .replace(", Deserialize", "")
         .replace("#[serde(deny_unknown_fields)]\n", "")
-        .replace("#[serde(rename_all = \"SCREAMING_SNAKE_CASE\")]\n", "")
+        .replace("#[serde(rename = \"syncToken\")]\n", "")
+        .replace("#[serde(rename = \"createDate\")]\n", "")
         .replace("String", "&'static str")
         .replace("Vec<", "&'static [")
         .replace(">,", "],");
@@ -38,28 +38,15 @@ fn generate_types_module() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn generate_meta_rs() -> Result<(), Box<dyn Error>> {
+fn generate_data_rs() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-changed=data/");
 
-    let path = Path::new(&std::env::var("OUT_DIR")?).join("meta.rs");
+    let path = Path::new(&std::env::var("OUT_DIR")?).join("data.rs");
     let mut file = BufWriter::new(File::create(path)?);
 
-    let meta = include_bytes!("data/meta.json");
-    let meta: Meta = serde_json::from_slice(meta)?;
-    writeln!(file, "{meta:?}")?;
-
-    Ok(())
-}
-
-fn generate_secret_scanning_rs() -> Result<(), Box<dyn Error>> {
-    println!("cargo:rerun-if-changed=data/");
-
-    let path = Path::new(&std::env::var("OUT_DIR")?).join("secret_scanning.rs");
-    let mut file = BufWriter::new(File::create(path)?);
-
-    let secret_scanning = include_bytes!("data/secret-scanning.json");
-    let secret_scanning: SecretScanning = serde_json::from_slice(secret_scanning)?;
-    writeln!(file, "{secret_scanning:?}")?;
+    let ip_ranges = include_bytes!("data/ip-ranges.json");
+    let ip_ranges: IpRanges = serde_json::from_slice(ip_ranges)?;
+    writeln!(file, "{ip_ranges:?}")?;
 
     Ok(())
 }
@@ -86,82 +73,47 @@ impl<T: Debug> Debug for Array<'_, T> {
     }
 }
 
-impl Debug for Meta {
+impl Debug for IpRanges {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "Meta {{")?;
+        writeln!(f, "IpRanges {{")?;
+        writeln!(f, "    sync_token: {:?},", self.sync_token)?;
+        writeln!(f, "    create_date: {:?},", self.create_date)?;
+        writeln!(f, "    prefixes: {:?},", Array::new(&self.prefixes, 1))?;
         writeln!(
             f,
-            "    verifiable_password_authentication: {:?},",
-            self.verifiable_password_authentication
-        )?;
-        writeln!(
-            f,
-            "    ssh_key_fingerprints: {:?},",
-            self.ssh_key_fingerprints
-        )?;
-        writeln!(f, "    ssh_keys: {:?},", Array::new(&self.ssh_keys, 1))?;
-        writeln!(f, "    hooks: {:?},", Array::new(&self.hooks, 1))?;
-        writeln!(f, "    web: {:?},", Array::new(&self.web, 1))?;
-        writeln!(f, "    api: {:?},", Array::new(&self.api, 1))?;
-        writeln!(f, "    git: {:?},", Array::new(&self.git, 1))?;
-        writeln!(
-            f,
-            "    github_enterprise_importer: {:?},",
-            Array::new(&self.github_enterprise_importer, 1)
-        )?;
-        writeln!(f, "    packages: {:?},", Array::new(&self.packages, 1))?;
-        writeln!(f, "    pages: {:?},", Array::new(&self.pages, 1))?;
-        writeln!(f, "    importer: {:?},", Array::new(&self.importer, 1))?;
-        writeln!(f, "    actions: {:?},", Array::new(&self.actions, 1))?;
-        writeln!(f, "    dependabot: {:?},", Array::new(&self.dependabot, 1))?;
-        writeln!(f, "    domains: {:?},", self.domains)?;
-        write!(f, "}}")
-    }
-}
-
-impl Debug for SshKeyFingerprints {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "SshKeyFingerprints {{")?;
-        writeln!(f, "        sha256_ecdsa: \"{}\",", self.sha256_ecdsa)?;
-        writeln!(f, "        sha256_ed25519: \"{}\",", self.sha256_ed25519)?;
-        writeln!(f, "        sha256_rsa: \"{}\",", self.sha256_rsa)?;
-        write!(f, "    }}")
-    }
-}
-
-impl Debug for Domains {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "Domains {{")?;
-        writeln!(f, "        website: {:?},", Array::new(&self.website, 2))?;
-        writeln!(
-            f,
-            "        codespaces: {:?},",
-            Array::new(&self.codespaces, 2)
-        )?;
-        writeln!(f, "        copilot: {:?},", Array::new(&self.copilot, 2))?;
-        writeln!(f, "        packages: {:?},", Array::new(&self.packages, 2))?;
-        write!(f, "    }}")
-    }
-}
-
-impl Debug for SecretScanning {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "SecretScanning {{")?;
-        writeln!(
-            f,
-            "    public_keys: {:?},",
-            Array::new(&self.public_keys, 1)
+            "    ipv6_prefixes: {:?},",
+            Array::new(&self.ipv6_prefixes, 1)
         )?;
         write!(f, "}}")
     }
 }
 
-impl Debug for PublicKey {
+impl Debug for Prefix {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "PublicKey {{")?;
-        writeln!(f, "        key_identifier: \"{}\",", self.key_identifier)?;
-        writeln!(f, "        key: \"{}\",", self.key)?;
-        writeln!(f, "        is_current: {:?},", self.is_current)?;
-        write!(f, "    }}")
+        writeln!(f, "Prefix {{")?;
+        writeln!(f, "            ip_prefix: {:?},", self.ip_prefix)?;
+        writeln!(f, "            region: {:?},", self.region)?;
+        writeln!(f, "            service: {:?},", self.service)?;
+        writeln!(
+            f,
+            "            network_border_group: {:?},",
+            self.network_border_group
+        )?;
+        write!(f, "        }}")
+    }
+}
+
+impl Debug for Ipv6Prefix {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "Ipv6Prefix {{")?;
+        writeln!(f, "            ipv6_prefix: {:?},", self.ipv6_prefix)?;
+        writeln!(f, "            region: {:?},", self.region)?;
+        writeln!(f, "            service: {:?},", self.service)?;
+        writeln!(
+            f,
+            "            network_border_group: {:?},",
+            self.network_border_group
+        )?;
+        write!(f, "        }}")
     }
 }
