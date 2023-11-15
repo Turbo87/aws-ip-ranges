@@ -50,7 +50,7 @@ jobs:
       - run: git tag "v${{ steps.bump-version.outputs.version }}"
         if: steps.git-diff.outcome == 'failure'
 
-      - run: git push main "v${{ steps.bump-version.outputs.version }}"
+      - run: git push origin main "v${{ steps.bump-version.outputs.version }}"
         if: steps.git-diff.outcome == 'failure'
 
       - run: cargo publish
