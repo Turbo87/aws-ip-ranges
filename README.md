@@ -1,6 +1,10 @@
 aws-ip-ranges
 ==============================================================================
 
+**⚠️ DEPRECATED: This crate is no longer maintained. The crates.io project,
+which was the primary user of this crate, no longer uses it. Consider fetching
+the data directly from <https://ip-ranges.amazonaws.com/ip-ranges.json> instead.**
+
 <https://ip-ranges.amazonaws.com/ip-ranges.json> as const structs
 
 
@@ -20,11 +24,10 @@ Usage
 
 ```rust
 fn main() {
-  let ip_ranges = aws_ip_ranges::IP_RANGES;
-  println!("{ip_ranges:#?}");
+    let ip_ranges = aws_ip_ranges::IP_RANGES;
+    println!("{ip_ranges:#?}");
 }
 ```
-
 
 License
 ------------------------------------------------------------------------------

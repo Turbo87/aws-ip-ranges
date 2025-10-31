@@ -1,7 +1,7 @@
 [package]
 name = "aws-ip-ranges"
 version = "0.1516.0"
-description = "https://ip-ranges.amazonaws.com/ip-ranges.json as const structs"
+description = "DEPRECATED: https://ip-ranges.amazonaws.com/ip-ranges.json as const structs"
 license = "MIT/Apache-2.0"
 repository = "https://github.com/Turbo87/aws-ip-ranges"
 keywords = ["aws"]
